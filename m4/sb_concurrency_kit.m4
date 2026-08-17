@@ -61,9 +61,13 @@ AS_IF([test "x$sb_cv_lib_ck" = "xsystem"],
         CK_CONFIGURE_FLAGS="--use-cc-builtins"
         ;;
     esac
+
     # Add --enable-lse to CK build flags, if LSE instructions are supported by
     # the target architecture
     if test "$cross_compiling" = no -a "$host_cpu" = aarch64; then
+      case $host_os in
+        darwin*) ;;
+        *)
       AC_MSG_CHECKING([whether LSE instructions are supported])
       AC_COMPILE_IFELSE(
         [AC_LANG_PROGRAM(,
@@ -88,9 +92,21 @@ AS_IF([test "x$sb_cv_lib_ck" = "xsystem"],
       )
 
       AC_SUBST([CK_CONFIGURE_FLAGS])
+      ;;
+      esac
     fi
   ]
 )
+
+# Apple Clang miscompiles Concurrency Kit's AArch64 inline assembly for atomic
+# operations (both LSE and LL/SC paths), which breaks histogram collection and
+# other ck_pr users. Use compiler builtins instead.
+case $host_os in
+  darwin*)
+    AS_IF([test "$host_cpu" = "aarch64"],
+      [CPPFLAGS="${CPPFLAGS} -DCK_USE_CC_BUILTINS"])
+    ;;
+esac
 
 AC_DEFINE_UNQUOTED([SB_WITH_CK], ["$sb_use_ck"],
   [Whether system or bundled Concurrency Kit is used])
