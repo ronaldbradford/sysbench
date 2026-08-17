@@ -2,20 +2,7 @@
 --histogram tests
 ########################################################################
 
-  $ cat >$CRAMTMP/histogram.lua <<EOF
-  > local ffi = require("ffi")
-  > ffi.cdef[[
-  >   int usleep(unsigned int);
-  > ]]
-  > function event()
-  >   if (sysbench.tid == 0) then
-  >     ffi.C.usleep(1000000)
-  >   else
-  >     ffi.C.usleep(2000000)
-  >   end
-  > end
-  > EOF
-  $ sysbench --histogram $CRAMTMP/histogram.lua --events=2 --threads=2 run
+  $ sysbench --histogram $SBTEST_INCDIR/histogram_test.lua --events=2 --threads=2 run
   sysbench * (glob)
   
   Running the test with following options:
