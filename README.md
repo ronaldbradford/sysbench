@@ -174,6 +174,7 @@ Assuming you have Xcode (or Xcode Command Line Tools) and Homebrew installed:
     brew install postgresql
     # openssl is not linked by Homebrew, this is to avoid "ld: library not found for -lssl"
     export LDFLAGS=-L/usr/local/opt/openssl/lib 
+    export MACOSX_DEPLOYMENT_TARGET=$(sw_vers -productVersion)
 ```
 
 ## Build and Install
